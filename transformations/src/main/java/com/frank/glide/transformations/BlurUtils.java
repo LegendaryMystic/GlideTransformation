@@ -1,4 +1,4 @@
-package com.frank.glide.transformations.utils;
+package com.frank.glide.transformations;
 
 import android.annotation.TargetApi;
 import android.content.Context;

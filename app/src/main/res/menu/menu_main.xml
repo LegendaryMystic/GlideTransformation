@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/clear_all_cache" android:title="@string/clear_all_cache" />
+    <item android:id="@+id/clear_memory_cache" android:title="@string/clear_memory_cache" />
+    <item android:id="@+id/clear_disk_cache" android:title="@string/clear_disk_cache" />
+    <item android:id="@+id/refresh" android:title="@string/refresh" />
+</menu>

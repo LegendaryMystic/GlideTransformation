@@ -6,7 +6,6 @@ import android.support.annotation.NonNull;
 
 import com.bumptech.glide.load.engine.bitmap_recycle.BitmapPool;
 import com.bumptech.glide.load.resource.bitmap.BitmapTransformation;
-import com.frank.glide.transformations.utils.GlideTransformationUtils;
 
 import java.nio.ByteBuffer;
 import java.security.MessageDigest;

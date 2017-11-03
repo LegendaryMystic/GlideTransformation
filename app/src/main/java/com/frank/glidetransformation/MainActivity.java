@@ -1,50 +1,104 @@
 package com.frank.glidetransformation;
 
-import android.graphics.Bitmap;
+import android.app.Activity;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.widget.ImageView;
+import android.support.v7.widget.DividerItemDecoration;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.view.Menu;
+import android.view.MenuItem;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.MultiTransformation;
-import com.bumptech.glide.load.resource.bitmap.CenterCrop;
-import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
-import com.bumptech.glide.request.RequestOptions;
-import com.frank.glide.transformations.BlurTransformation;
-import com.frank.glide.transformations.RoundedCornersTransformation;
+
+import java.lang.ref.WeakReference;
+import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
-    private ImageView mImageView0;
-    private ImageView mImageView1;
-    private ImageView mImageView2;
-    private ImageView mImageView3;
+    private RecyclerView mRecyclerView;
+    private TeamListAdapter mAdapter;
+    private List<TeamBean> mGameList = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        mImageView0 = (ImageView) findViewById(R.id.img0);
-        mImageView1 = (ImageView) findViewById(R.id.img1);
-        mImageView2 = (ImageView) findViewById(R.id.img2);
-        mImageView3 = (ImageView) findViewById(R.id.img3);
+        mRecyclerView = findViewById(R.id.recyclerView);
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        mRecyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
+        mAdapter = new TeamListAdapter(this, mGameList);
+        mRecyclerView.setAdapter(mAdapter);
+        refreshList();
+    }
 
-        mImageView0.setImageResource(R.drawable.test001);
+    private void refreshList() {
+        mGameList.clear();
+        for (int i = 0; i < TeamConstants.logoList.length; i++) {
+            TeamBean teamBean = new TeamBean();
+            teamBean.setId("ID" + i);
+            teamBean.setName(TeamConstants.nameList[i]);
+            teamBean.setImage(TeamConstants.logoList[i]);
+            mGameList.add(teamBean);
+        }
+        mAdapter.notifyDataSetChanged();
+    }
 
-        RequestOptions options1 = new RequestOptions()
-                .transform(new MultiTransformation<>(new CenterCrop(),
-                        new RoundedCornersTransformation(20, 0, RoundedCornersTransformation.TOP)));
-        Glide.with(this)
-                .load("http://img.my.csdn.net/uploads/201508/05/1438760725_4031.jpg")
-                .apply(options1)
-                .into(mImageView1);
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
+    }
 
-        RequestOptions options2 = new RequestOptions()
-                .transform(new MultiTransformation<>(new CenterCrop(),
-                        new BlurTransformation(this, 10, 5)));
-        Glide.with(this)
-                .load("http://img.my.csdn.net/uploads/201508/05/1438760725_4031.jpg")
-                .apply(options2)
-                .into(mImageView2);
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.clear_all_cache:
+                clearAllCache();
+                break;
+            case R.id.clear_memory_cache:
+                clearMemoryCache();
+                break;
+            case R.id.clear_disk_cache:
+                clearDiskCache();
+                break;
+            default:
+                refreshList();
+                break;
+        }
+        return true;
+    }
+
+    private void clearAllCache() {
+        clearMemoryCache();
+        clearDiskCache();
+    }
+
+    private void clearMemoryCache() {
+        Glide.get(this).clearMemory();
+    }
+
+    private void clearDiskCache() {
+        new ClearDiskCacheTask(this).execute();
+    }
+
+    private static class ClearDiskCacheTask extends AsyncTask<Void, Void, Void> {
+
+        private final WeakReference<Activity> mActivity;
+
+        public ClearDiskCacheTask(Activity activity) {
+            mActivity = new WeakReference<>(activity);
+        }
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            final Activity activity = mActivity.get();
+            if (activity != null) {
+                Glide.get(activity).clearDiskCache();
+            }
+            return null;
+        }
     }
 }
