@@ -10,15 +10,12 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
+import com.bumptech.glide.load.MultiTransformation;
 import com.bumptech.glide.request.RequestOptions;
-import com.frank.glide.transformations.BlurTransformation;
+import com.frank.glide.transformations.CropTransformation;
 import com.frank.glide.transformations.GlideTransformationUtils;
-import com.frank.glide.transformations.RoundedCornersTransformation;
 
 import java.util.List;
-
-import static com.bumptech.glide.request.RequestOptions.bitmapTransform;
 
 public class TeamListAdapter extends RecyclerView.Adapter<TeamListAdapter.ViewHolder> {
 
@@ -45,9 +42,12 @@ public class TeamListAdapter extends RecyclerView.Adapter<TeamListAdapter.ViewHo
         holder.name.setText(teamBean.getName());
         Activity activity = (Activity) mContext;
         ImageView imageView = holder.image;
+        RequestOptions requestOptions = new RequestOptions()
+                .transform(new MultiTransformation<>(new CropTransformation(100, 20,
+                        GlideTransformationUtils.CROP_TYPE_TOP)));
         Glide.with(activity)
                 .load(teamBean.getImage())
-                .apply(bitmapTransform(new RoundedCornersTransformation(60, 0, GlideTransformationUtils.TOP)))
+                .apply(requestOptions)
                 .into(imageView);
     }
 

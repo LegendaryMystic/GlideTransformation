@@ -3,11 +3,8 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/GlideTransformation.iml" filepath="$PROJECT_DIR$/GlideTransformation.iml" />
-      <module fileurl="file://C:\frank\test\GlideTransformation\GlideTransformation.iml" filepath="C:\frank\test\GlideTransformation\GlideTransformation.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
-      <module fileurl="file://C:\frank\test\GlideTransformation\app\app.iml" filepath="C:\frank\test\GlideTransformation\app\app.iml" />
       <module fileurl="file://$PROJECT_DIR$/transformations/transformations.iml" filepath="$PROJECT_DIR$/transformations/transformations.iml" />
-      <module fileurl="file://C:\frank\test\GlideTransformation\transformations\transformations.iml" filepath="C:\frank\test\GlideTransformation\transformations\transformations.iml" />
     </modules>
   </component>
 </project>

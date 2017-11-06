@@ -19,14 +19,32 @@ public class BlurTransformation extends BitmapTransformation {
     private int mRadius;
     private int mSampling;
 
+    /**
+     * Creates a blur transformation with the default blur radius of 20
+     *
+     * @param context Current context
+     */
     public BlurTransformation(Context context) {
         this(context, 20);
     }
 
+    /**
+     * Creates a blur transformation
+     *
+     * @param context Current context
+     * @param radius  Set the radius of the Blur. Supported range 0 < radius <= 25
+     */
     public BlurTransformation(Context context, int radius) {
         this(context, radius, 1);
     }
 
+    /**
+     * Creates a blur transformation
+     *
+     * @param context  Current context
+     * @param radius   Set the radius of the Blur. Supported range 0 < radius <= 25
+     * @param sampling Sampling ratio, default ratio is 1
+     */
     public BlurTransformation(Context context, int radius, int sampling) {
         mContext = context;
         mRadius = radius;
@@ -35,20 +53,19 @@ public class BlurTransformation extends BitmapTransformation {
 
     @Override
     protected Bitmap transform(@NonNull BitmapPool pool, @NonNull Bitmap toTransform, int outWidth, int outHeight) {
-        return GlideTransformationUtils.blur(pool, toTransform, outWidth, outHeight,
-                mContext, mRadius, mSampling);
+        return GlideTransformationUtils.blur(pool, toTransform, mContext, mRadius, mSampling);
     }
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         BlurTransformation that = (BlurTransformation) o;
-
-        if (mRadius != that.mRadius) return false;
-        return mSampling == that.mSampling;
-
+        return mRadius == that.mRadius && mSampling == that.mSampling;
     }
 
     @Override

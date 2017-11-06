@@ -19,18 +19,14 @@ public class RoundedCornersTransformation extends BitmapTransformation {
     private int mCornerType;
 
     public RoundedCornersTransformation(int radius, int margin) {
-        this(radius, margin, GlideTransformationUtils.ALL);
+        this(radius, margin, GlideTransformationUtils.CORNER_TYPE_ALL);
     }
 
     public RoundedCornersTransformation(int radius, int margin,
-                                        int cornerType) {
+                                        @GlideTransformationUtils.CornerType int cornerType) {
         mRadius = radius;
         mMargin = margin;
-        if (cornerType < 0 || cornerType > 14) {
-            mCornerType = GlideTransformationUtils.ALL;
-        } else {
-            mCornerType = cornerType;
-        }
+        mCornerType = cornerType;
     }
 
     @Override
@@ -40,14 +36,14 @@ public class RoundedCornersTransformation extends BitmapTransformation {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         RoundedCornersTransformation that = (RoundedCornersTransformation) o;
-
-        if (mRadius != that.mRadius) return false;
-        if (mMargin != that.mMargin) return false;
-        return mCornerType == that.mCornerType;
+        return mRadius == that.mRadius && mMargin == that.mMargin && mCornerType == that.mCornerType;
 
     }
 

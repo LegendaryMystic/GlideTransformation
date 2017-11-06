@@ -14,6 +14,7 @@ import android.graphics.Shader;
 import android.media.ExifInterface;
 import android.os.Build;
 import android.renderscript.RSRuntimeException;
+import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
@@ -21,6 +22,8 @@ import com.bumptech.glide.load.engine.bitmap_recycle.BitmapPool;
 import com.bumptech.glide.util.Preconditions;
 import com.bumptech.glide.util.Synthetic;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -41,21 +44,35 @@ public final class GlideTransformationUtils {
     private static final Paint CIRCLE_CROP_SHAPE_PAINT = new Paint(CIRCLE_CROP_PAINT_FLAGS);
     private static final Paint CIRCLE_CROP_BITMAP_PAINT;
 
-    public static final int ALL = 0;
-    public static final int TOP_LEFT = 1;
-    public static final int TOP_RIGHT = 2;
-    public static final int BOTTOM_LEFT = 3;
-    public static final int BOTTOM_RIGHT = 4;
-    public static final int TOP = 5;
-    public static final int BOTTOM = 6;
-    public static final int LEFT = 7;
-    public static final int RIGHT = 8;
-    public static final int OTHER_TOP_LEFT = 9;
-    public static final int OTHER_TOP_RIGHT = 10;
-    public static final int OTHER_BOTTOM_LEFT = 11;
-    public static final int OTHER_BOTTOM_RIGHT = 12;
-    public static final int DIAGONAL_FROM_TOP_LEFT = 13;
-    public static final int DIAGONAL_FROM_TOP_RIGHT = 14;
+    @Retention(RetentionPolicy.SOURCE)
+    @IntDef({CORNER_TYPE_ALL, CORNER_TYPE_TOP_LEFT, CORNER_TYPE_TOP_RIGHT, CORNER_TYPE_BOTTOM_LEFT,
+            CORNER_TYPE_BOTTOM_RIGHT, CORNER_TYPE_TOP, CORNER_TYPE_BOTTOM, CORNER_TYPE_LEFT,
+            CORNER_TYPE_RIGHT, CORNER_TYPE_OTHER_TOP_LEFT, CORNER_TYPE_OTHER_TOP_RIGHT,
+            CORNER_TYPE_OTHER_BOTTOM_LEFT, CORNER_TYPE_OTHER_BOTTOM_RIGHT,
+            CORNER_TYPE_DIAGONAL_FROM_TOP_LEFT, CORNER_TYPE_DIAGONAL_FROM_TOP_RIGHT})
+    @interface CornerType {
+    }
+
+    @Retention(RetentionPolicy.SOURCE)
+    @IntDef({CROP_TYPE_TOP, CROP_TYPE_CENTER, CROP_TYPE_BOTTOM})
+    @interface CropType {
+    }
+
+    public static final int CORNER_TYPE_ALL = 0;
+    public static final int CORNER_TYPE_TOP_LEFT = 1;
+    public static final int CORNER_TYPE_TOP_RIGHT = 2;
+    public static final int CORNER_TYPE_BOTTOM_LEFT = 3;
+    public static final int CORNER_TYPE_BOTTOM_RIGHT = 4;
+    public static final int CORNER_TYPE_TOP = 5;
+    public static final int CORNER_TYPE_BOTTOM = 6;
+    public static final int CORNER_TYPE_LEFT = 7;
+    public static final int CORNER_TYPE_RIGHT = 8;
+    public static final int CORNER_TYPE_OTHER_TOP_LEFT = 9;
+    public static final int CORNER_TYPE_OTHER_TOP_RIGHT = 10;
+    public static final int CORNER_TYPE_OTHER_BOTTOM_LEFT = 11;
+    public static final int CORNER_TYPE_OTHER_BOTTOM_RIGHT = 12;
+    public static final int CORNER_TYPE_DIAGONAL_FROM_TOP_LEFT = 13;
+    public static final int CORNER_TYPE_DIAGONAL_FROM_TOP_RIGHT = 14;
 
     public static final int CROP_TYPE_TOP = 0;
     public static final int CROP_TYPE_CENTER = 1;
@@ -286,7 +303,7 @@ public final class GlideTransformationUtils {
         }
     }
 
-    public static Bitmap blur(@NonNull BitmapPool pool, @NonNull Bitmap inBitmap, int width, int height,
+    public static Bitmap blur(@NonNull BitmapPool pool, @NonNull Bitmap inBitmap,
                               Context context, int radius, int sampling) {
         Preconditions.checkArgument(radius > 0 && radius < 26,
                 "radius must be greater than 0 and less than 26.");
@@ -338,7 +355,7 @@ public final class GlideTransformationUtils {
 
     public static Bitmap roundedCorners(@NonNull BitmapPool pool, @NonNull Bitmap inBitmap,
                                         int radius, int margin,
-                                        int cornerType) {
+                                        @CornerType int cornerType) {
         // Alpha is required for this transformation.
         Bitmap toTransform = getAlphaSafeBitmap(pool, inBitmap);
         Bitmap result =
@@ -360,82 +377,82 @@ public final class GlideTransformationUtils {
             int diameter = radius * 2;
 
             switch (cornerType) {
-                case ALL:
+                case CORNER_TYPE_ALL:
                     canvas.drawRoundRect(new RectF(margin, margin, right, bottom), radius, radius, paint);
                     break;
-                case TOP_LEFT:
+                case CORNER_TYPE_TOP_LEFT:
                     canvas.drawRoundRect(new RectF(margin, margin, margin + diameter, margin + diameter),
                             radius, radius, paint);
                     canvas.drawRect(new RectF(margin, margin + radius, margin + radius, bottom), paint);
                     canvas.drawRect(new RectF(margin + radius, margin, right, bottom), paint);
                     break;
-                case TOP_RIGHT:
+                case CORNER_TYPE_TOP_RIGHT:
                     canvas.drawRoundRect(new RectF(right - diameter, margin, right, margin + diameter), radius,
                             radius, paint);
                     canvas.drawRect(new RectF(margin, margin, right - radius, bottom), paint);
                     canvas.drawRect(new RectF(right - radius, margin + radius, right, bottom), paint);
                     break;
-                case BOTTOM_LEFT:
+                case CORNER_TYPE_BOTTOM_LEFT:
                     canvas.drawRoundRect(new RectF(margin, bottom - diameter, margin + diameter, bottom),
                             radius, radius, paint);
                     canvas.drawRect(new RectF(margin, margin, margin + diameter, bottom - radius), paint);
                     canvas.drawRect(new RectF(margin + radius, margin, right, bottom), paint);
                     break;
-                case BOTTOM_RIGHT:
+                case CORNER_TYPE_BOTTOM_RIGHT:
                     canvas.drawRoundRect(new RectF(right - diameter, bottom - diameter, right, bottom), radius,
                             radius, paint);
                     canvas.drawRect(new RectF(margin, margin, right - radius, bottom), paint);
                     canvas.drawRect(new RectF(right - radius, margin, right, bottom - radius), paint);
                     break;
-                case TOP:
+                case CORNER_TYPE_TOP:
                     canvas.drawRoundRect(new RectF(margin, margin, right, margin + diameter), radius, radius,
                             paint);
                     canvas.drawRect(new RectF(margin, margin + radius, right, bottom), paint);
                     break;
-                case BOTTOM:
+                case CORNER_TYPE_BOTTOM:
                     canvas.drawRoundRect(new RectF(margin, bottom - diameter, right, bottom), radius, radius,
                             paint);
                     canvas.drawRect(new RectF(margin, margin, right, bottom - radius), paint);
                     break;
-                case LEFT:
+                case CORNER_TYPE_LEFT:
                     canvas.drawRoundRect(new RectF(margin, margin, margin + diameter, bottom), radius, radius,
                             paint);
                     canvas.drawRect(new RectF(margin + radius, margin, right, bottom), paint);
                     break;
-                case RIGHT:
+                case CORNER_TYPE_RIGHT:
                     canvas.drawRoundRect(new RectF(right - diameter, margin, right, bottom), radius, radius,
                             paint);
                     canvas.drawRect(new RectF(margin, margin, right - radius, bottom), paint);
                     break;
-                case OTHER_TOP_LEFT:
+                case CORNER_TYPE_OTHER_TOP_LEFT:
                     canvas.drawRoundRect(new RectF(margin, bottom - diameter, right, bottom), radius, radius,
                             paint);
                     canvas.drawRoundRect(new RectF(right - diameter, margin, right, bottom), radius, radius,
                             paint);
                     canvas.drawRect(new RectF(margin, margin, right - radius, bottom - radius), paint);
                     break;
-                case OTHER_TOP_RIGHT:
+                case CORNER_TYPE_OTHER_TOP_RIGHT:
                     canvas.drawRoundRect(new RectF(margin, margin, margin + diameter, bottom), radius, radius,
                             paint);
                     canvas.drawRoundRect(new RectF(margin, bottom - diameter, right, bottom), radius, radius,
                             paint);
                     canvas.drawRect(new RectF(margin + radius, margin, right, bottom - radius), paint);
                     break;
-                case OTHER_BOTTOM_LEFT:
+                case CORNER_TYPE_OTHER_BOTTOM_LEFT:
                     canvas.drawRoundRect(new RectF(margin, margin, right, margin + diameter), radius, radius,
                             paint);
                     canvas.drawRoundRect(new RectF(right - diameter, margin, right, bottom), radius, radius,
                             paint);
                     canvas.drawRect(new RectF(margin, margin + radius, right - radius, bottom), paint);
                     break;
-                case OTHER_BOTTOM_RIGHT:
+                case CORNER_TYPE_OTHER_BOTTOM_RIGHT:
                     canvas.drawRoundRect(new RectF(margin, margin, right, margin + diameter), radius, radius,
                             paint);
                     canvas.drawRoundRect(new RectF(margin, margin, margin + diameter, bottom), radius, radius,
                             paint);
                     canvas.drawRect(new RectF(margin + radius, margin + radius, right, bottom), paint);
                     break;
-                case DIAGONAL_FROM_TOP_LEFT:
+                case CORNER_TYPE_DIAGONAL_FROM_TOP_LEFT:
                     canvas.drawRoundRect(new RectF(margin, margin, margin + diameter, margin + diameter),
                             radius, radius, paint);
                     canvas.drawRoundRect(new RectF(right - diameter, bottom - diameter, right, bottom), radius,
@@ -443,7 +460,7 @@ public final class GlideTransformationUtils {
                     canvas.drawRect(new RectF(margin, margin + radius, right - diameter, bottom), paint);
                     canvas.drawRect(new RectF(margin + diameter, margin, right, bottom - radius), paint);
                     break;
-                case DIAGONAL_FROM_TOP_RIGHT:
+                case CORNER_TYPE_DIAGONAL_FROM_TOP_RIGHT:
                     canvas.drawRoundRect(new RectF(right - diameter, margin, right, margin + diameter), radius,
                             radius, paint);
                     canvas.drawRoundRect(new RectF(margin, bottom - diameter, margin + diameter, bottom),
@@ -455,6 +472,56 @@ public final class GlideTransformationUtils {
                     canvas.drawRoundRect(new RectF(margin, margin, right, bottom), radius, radius, paint);
                     break;
             }
+            clear(canvas);
+        } finally {
+            BITMAP_DRAWABLE_LOCK.unlock();
+        }
+
+        if (!toTransform.equals(inBitmap)) {
+            pool.put(toTransform);
+        }
+
+        return result;
+    }
+
+    public static Bitmap crop(@NonNull BitmapPool pool, @NonNull Bitmap inBitmap, int width, int height,
+                              @CornerType int cropType) {
+        int srcWidth = inBitmap.getWidth();
+        int srcHeight = inBitmap.getHeight();
+        if (width == 0 && height != 0) {
+            width = (srcWidth * height) / srcHeight;
+        } else if (height == 0 && width != 0) {
+            height = (srcHeight * width) / srcWidth;
+        }
+        width = width == 0 ? srcWidth : width;
+        height = height == 0 ? srcHeight : height;
+        // Alpha is required for this transformation.
+        Bitmap toTransform = getAlphaSafeBitmap(pool, inBitmap);
+        Bitmap result = pool.get(width, height, Bitmap.Config.ARGB_8888);
+
+        result.setHasAlpha(true);
+
+        BITMAP_DRAWABLE_LOCK.lock();
+        try {
+            float scaleX = (float) width / srcWidth;
+            float scaleY = (float) height / srcHeight;
+            float scale = Math.max(scaleX, scaleY);
+
+            float scaledWidth = scale * srcWidth;
+            float scaledHeight = scale * srcHeight;
+            float left = (width - scaledWidth) / 2;
+            float top;
+            if (cropType == CROP_TYPE_TOP) {
+                top = 0;
+            } else if (cropType == CROP_TYPE_BOTTOM) {
+                top = height - scaledHeight;
+            } else {
+                top = (height - scaledHeight) / 2;
+            }
+            RectF targetRect = new RectF(left, top, left + scaledWidth, top + scaledHeight);
+
+            Canvas canvas = new Canvas(result);
+            canvas.drawBitmap(toTransform, null, targetRect, null);
             clear(canvas);
         } finally {
             BITMAP_DRAWABLE_LOCK.unlock();
