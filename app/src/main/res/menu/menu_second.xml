@@ -3,5 +3,5 @@
     <item android:id="@+id/clear_all_cache" android:title="@string/clear_all_cache" />
     <item android:id="@+id/clear_memory_cache" android:title="@string/clear_memory_cache" />
     <item android:id="@+id/clear_disk_cache" android:title="@string/clear_disk_cache" />
-    <item android:id="@+id/second_activity" android:title="@string/second_activity" />
+    <item android:id="@+id/refresh" android:title="@string/refresh" />
 </menu>

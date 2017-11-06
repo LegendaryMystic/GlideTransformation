@@ -3,5 +3,6 @@
     <string name="clear_all_cache">clearAllCache</string>
     <string name="clear_memory_cache">clearMemoryCache</string>
     <string name="clear_disk_cache">clearDiskCache</string>
+    <string name="second_activity">secondActivity</string>
     <string name="refresh">refresh</string>
 </resources>
